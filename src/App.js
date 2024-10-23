@@ -1,65 +1,36 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
-import firstImg from "./assets/images/firstMan.jpg";
-import secondImg from "./assets/images/woman.jpg";
-import thirdImg from "./assets/images/secondMan.jpg";
-import fourthImg from "./assets/images/fourthImg.jpg";
+
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+// import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "react-router-dom";
-// gsap.registerPlugin(ScrollTrigger);
-function App() {
+
+function LandingPage({ sampleData }) {
   const headerRef = useRef(null);
   const gridRef = useRef(null);
+  const [missingPersons, setMissingPersons] = useState([]);
 
-  const missingPersons = [
-    // Sample data
-    {
-      id: 1,
-      name: "John Doe",
-      gender: "Male",
-      lastSeen: "Central Park, NY, 09/01/2024",
-      imageUrl: thirdImg,
-      howLong: "14 days ago",
-    },
-    {
-      id: 2,
-      name: "Sandra Goldberg",
-      gender: "Male",
-      lastSeen: "Central Park, NY, 09/01/2024",
-      imageUrl: secondImg,
-      howLong: "33 days ago",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      gender: "Male",
-      lastSeen: "Central Park, NY, 09/01/2024",
-      imageUrl: firstImg,
-      howLong: "6 days ago",
-    },
-    {
-      id: 4,
-      name: "John Doe",
-      gender: "Male",
-      lastSeen: "Central Park, NY, 09/01/2024",
-      imageUrl: fourthImg,
-      howLong: "22 days ago",
-    },
-    // ... more profiles
-  ];
   useEffect(() => {
+    console.log("this is sam", sampleData);
+    // Retrieve profiles from localStorage
+    const storedProfiles =
+      JSON.parse(localStorage.getItem("missingPersons")) || [];
+
+    // Combine sample data with stored profiles
+    const combinedProfiles = [...sampleData, ...storedProfiles];
+
+    // Set combined profiles to state
+    setMissingPersons(combinedProfiles);
+
     // Hero Section Animation
-    console.log(headerRef.current);
     gsap.to(headerRef.current, {
       opacity: 1,
       y: -50,
       duration: 1.5,
       ease: "power2.out",
     });
+  }, [headerRef.current, sampleData]);
 
-    // Grid Section Animation
-  }, [headerRef.current]);
   return (
     <div className="App">
       <header ref={headerRef} className="Hero-section">
@@ -76,21 +47,23 @@ function App() {
           Help Us Find Them <span className="please">(please)</span>
         </h3>
         <div ref={gridRef} className="grid-container">
-          {missingPersons.map((person) => {
-            const days = parseInt(person.howLong.split(" ")[0]);
+          {missingPersons.map((person, index) => {
+            const days = parseInt(
+              person.howLong ? person.howLong.split(" ")[0] : 0
+            );
             const isOverdue = days > 14;
             return (
-              <div key={person.id} className="profile-card">
-                <img src={person.imageUrl} alt={person.name} />
+              <div key={index} className="profile-card">
+                <img src={person.imageUrl || person.photo} alt={person.name} />
                 <div className="howLong">
                   <div className={`howLongInner ${isOverdue ? "overdue" : ""}`}>
-                    {person.howLong}
+                    {person.howLong || "Recently"}
                   </div>
                 </div>
                 <h4>{person.name}</h4>
                 <p>{person.gender}</p>
                 <p>Last seen: {person.lastSeen}</p>
-                <Link to={`/person/${person.id}`}>
+                <Link to={`/person/${index + 1}`}>
                   <button>More Details about {person.name}</button>
                 </Link>
               </div>
@@ -109,4 +82,4 @@ function App() {
   );
 }
 
-export default App;
+export default LandingPage;

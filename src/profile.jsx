@@ -6,7 +6,7 @@ import firstImg from "./assets/images/firstMan.jpg";
 import secondImg from "./assets/images/woman.jpg";
 import thirdImg from "./assets/images/secondMan.jpg";
 import fourthImg from "./assets/images/fourthImg.jpg";
-function PersonDetails() {
+function PersonDetails({ profiles }) {
   const { id } = useParams();
   const missingPersons = [
     // Sample data

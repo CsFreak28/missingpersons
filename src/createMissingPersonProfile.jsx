@@ -7,7 +7,7 @@ const ReportMissingPerson = () => {
     name: "",
     age: "",
     gender: "",
-    lastSeenLocation: "",
+    lastSeen: "",
     dateLastSeen: "",
     contactInfo: "",
     photo: null,
@@ -39,23 +39,18 @@ const ReportMissingPerson = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/createMissingPersonProfile",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      // Get current stored profiles from localStorage
+      const storedProfiles =
+        JSON.parse(localStorage.getItem("missingPersons")) || [];
 
-      if (response.ok) {
-        // Show the confirmation popup
-        setShowPopup(true);
-      } else {
-        console.error("Error submitting form", await response.json());
-      }
+      // Add the new profile to the existing profiles
+      const updatedProfiles = [...storedProfiles, formData];
+
+      // Store updated profiles in localStorage
+      localStorage.setItem("missingPersons", JSON.stringify(updatedProfiles));
+
+      // Show confirmation popup
+      setShowPopup(true);
     } catch (error) {
       console.error("Error:", error);
     }
